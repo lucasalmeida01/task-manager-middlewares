@@ -10,7 +10,19 @@ app.use(cors());
 const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+
+  const user = users.find((user) => user.username == username);
+
+  if (!user) {
+    return response.code(404).json({
+      error: "User not found!"
+    });
+  }
+
+  request.user = user;
+  return next();
+
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
@@ -22,7 +34,19 @@ function checksTodoExists(request, response, next) {
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const { id } = request.params;
+
+  const user = users.find((user) => user.id === id);
+
+  if (!user) {
+    return response.status(404).json({
+      error: "Id not found!"
+    });
+  }
+
+  request.id = id;
+  request.user = user;
+  return next();
 }
 
 app.post('/users', (request, response) => {
@@ -31,7 +55,10 @@ app.post('/users', (request, response) => {
   const usernameAlreadyExists = users.some((user) => user.username === username);
 
   if (usernameAlreadyExists) {
-    return response.status(400).json({ error: 'Username already exists' });
+    return response.status(400).json(
+      {
+        error: 'Username already exists'
+      });
   }
 
   const user = {
@@ -49,7 +76,6 @@ app.post('/users', (request, response) => {
 
 app.get('/users/:id', findUserById, (request, response) => {
   const { user } = request;
-
   return response.json(user);
 });
 
@@ -128,3 +154,5 @@ module.exports = {
   checksTodoExists,
   findUserById
 };
+
+app.listen('3333');
