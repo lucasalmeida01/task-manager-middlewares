@@ -15,7 +15,7 @@ function checksExistsUserAccount(request, response, next) {
   const user = users.find((user) => user.username == username);
 
   if (!user) {
-    return response.code(404).json({
+    return response.status(404).json({
       error: "User not found!"
     });
   }
@@ -26,7 +26,18 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+
+  const available = user.pro === true || user.todos.length < 10;
+
+  if (available === false) {
+    return response.status(400).json({
+      "error": "Sorry! You can't add more to do's. Please change your plan to PRO!"
+    });
+  }
+
+  next();
+
 }
 
 function checksTodoExists(request, response, next) {
